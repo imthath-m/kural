@@ -13,6 +13,8 @@ packages:
     path: Packages/KuralKit
   KuralMacOS:
     path: Packages/KuralMacOS
+  KuralModels:
+    path: Packages/KuralModels
 
 targets:
   Kural-iOS:
@@ -23,6 +25,7 @@ targets:
       - path: App/Resources
     dependencies:
       - package: KuralKit
+      - package: KuralModels
     settings:
       base:
         PRODUCT_NAME: Kural
@@ -48,6 +51,7 @@ targets:
       - path: App/Resources
     dependencies:
       - package: KuralKit
+      - package: KuralModels
       - package: KuralMacOS
     settings:
       base:
