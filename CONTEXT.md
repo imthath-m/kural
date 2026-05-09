@@ -34,9 +34,13 @@ _Avoid_: main app, container app
 **Keyboard Extension**:
 On iOS, the custom keyboard that provides the dictation trigger. Does not run inference or capture audio.
 
+**Session Record**:
+A persisted snapshot of a completed Dictation Session, containing the raw transcription (Ghost Text), the Polished Text, timestamp, and duration. Stored locally via SwiftData.
+
 ## Relationships
 
 - A **Dictation Session** produces **Ghost Text** in real-time, then **Polishing** replaces it with **Polished Text**
+- Every completed **Dictation Session** is saved as a **Session Record**
 - The **Pending Buffer** feeds the **Committed Prefix** once words stabilize (post-Beta only)
 - The **KuralEngine** owns both the STT and LLM models and coordinates the full **Dictation Session**
 - On iOS, the **Keyboard Extension** signals the **Host App** to start/stop a **Dictation Session**
