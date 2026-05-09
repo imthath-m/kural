@@ -11,6 +11,10 @@ options:
 packages:
   KuralKit:
     path: Packages/KuralKit
+  KuralMacOS:
+    path: Packages/KuralMacOS
+  KuralModels:
+    path: Packages/KuralModels
 
 targets:
   Kural-iOS:
@@ -21,6 +25,7 @@ targets:
       - path: App/Resources
     dependencies:
       - package: KuralKit
+      - package: KuralModels
     settings:
       base:
         PRODUCT_NAME: Kural
@@ -46,6 +51,8 @@ targets:
       - path: App/Resources
     dependencies:
       - package: KuralKit
+      - package: KuralModels
+      - package: KuralMacOS
     settings:
       base:
         PRODUCT_NAME: Kural
@@ -56,4 +63,5 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        LSUIElement: YES
     scheme: {}
