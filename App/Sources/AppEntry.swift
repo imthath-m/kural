@@ -6,6 +6,10 @@ import KuralMacOS
 
 @main
 struct AppEntry: App {
+    #if os(macOS)
+    @StateObject private var hotkeyManager = HotkeyManager.shared
+    #endif
+
     var body: some Scene {
         #if os(macOS)
         MenuBarExtra("Kural", systemImage: "waveform") {
@@ -15,6 +19,11 @@ struct AppEntry: App {
 
         WindowGroup {
             ContentView()
+                .onAppear {
+                    #if os(macOS)
+                    hotkeyManager.setup()
+                    #endif
+                }
         }
     }
 }
