@@ -17,6 +17,7 @@ let package = Package(
         .package(path: "../KuralKit"),
         .package(path: "../KuralDomain"),
         .package(path: "../KuralEngine"),
+        .package(path: "../KuralModels"),
         .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.2.0")
     ],
     targets: [
@@ -26,6 +27,7 @@ let package = Package(
                 "KuralKit",
                 "KuralDomain",
                 "KuralEngine",
+                "KuralModels",
                 "KeyboardShortcuts"
             ],
             path: "Sources"
