@@ -1,6 +1,4 @@
 import Testing
 @testable import KuralModels
 
-@Test func example() async throws {
-    // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-}
+// Tests are now in ModelManagerTests.swift

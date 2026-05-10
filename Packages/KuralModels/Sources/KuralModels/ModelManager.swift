@@ -1,6 +1,6 @@
 import Foundation
-import Hub
 import Observation
+import Hub
 
 public enum ModelDownloadState: Equatable {
     case notDownloaded
@@ -10,23 +10,15 @@ public enum ModelDownloadState: Equatable {
 
 @Observable
 public final class ModelManager {
-    public static let shared = ModelManager()
-    
     public private(set) var transcriptionModelState: ModelDownloadState = .notDownloaded
     public private(set) var polishingModelState: ModelDownloadState = .notDownloaded
     
-    // Default model IDs based on common MLX models or placeholders
-    private let transcriptionModelRepo = "mlx-community/whisper-tiny"
-    private let polishingModelRepo = "mlx-community/mistral-7b-instruct-v0.2-4bit-mlx"
+    private let transcriptionRepoId = "mlx-community/parakeet-tdt-0.6b-v3-8bit"
+    private let polishingRepoId = "mlx-community/gemma-2-2b-it-4bit"
     
-    private init() {
-        checkLocalModels()
-    }
+    private let hub = HubApi()
     
-    private func checkLocalModels() {
-        // In a real app, check if the files exist in Hub.defaultStorage
-        // For now, initializing as notDownloaded
-    }
+    public init() {}
     
     public func downloadModels() async throws {
         try await withThrowingTaskGroup(of: Void.self) { group in
@@ -41,41 +33,32 @@ public final class ModelManager {
     }
     
     public func downloadTranscriptionModel() async throws {
-        await MainActor.run {
-            transcriptionModelState = .downloading(progress: 0)
-        }
-        let hub = HubApi()
-        _ = try await hub.snapshot(from: transcriptionModelRepo) { progress in
+        await updateTranscriptionState(.downloading(progress: 0))
+        _ = try await hub.snapshot(from: transcriptionRepoId) { progress in
             Task { @MainActor in
                 self.transcriptionModelState = .downloading(progress: progress.fractionCompleted)
             }
         }
-        await MainActor.run {
-            transcriptionModelState = .ready
-        }
+        await updateTranscriptionState(.ready)
     }
     
     public func downloadPolishingModel() async throws {
-        await MainActor.run {
-            polishingModelState = .downloading(progress: 0)
-        }
-        let hub = HubApi()
-        _ = try await hub.snapshot(from: polishingModelRepo) { progress in
+        await updatePolishingState(.downloading(progress: 0))
+        _ = try await hub.snapshot(from: polishingRepoId) { progress in
             Task { @MainActor in
                 self.polishingModelState = .downloading(progress: progress.fractionCompleted)
             }
         }
-        await MainActor.run {
-            polishingModelState = .ready
-        }
+        await updatePolishingState(.ready)
     }
     
-    /// Downloads a model from Hugging Face Hub. (Legacy)
-    public func downloadModel(repoId: String) async throws -> URL {
-        let hub = HubApi()
-        let modelDir = try await hub.snapshot(from: repoId) { progress in
-            print("Downloading \(repoId): \(Int(progress.fractionCompleted * 100))%")
-        }
-        return modelDir
+    @MainActor
+    private func updateTranscriptionState(_ state: ModelDownloadState) {
+        self.transcriptionModelState = state
+    }
+    
+    @MainActor
+    private func updatePolishingState(_ state: ModelDownloadState) {
+        self.polishingModelState = state
     }
 }
