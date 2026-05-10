@@ -14,6 +14,9 @@ public protocol DictationOrchestratorProtocol {
     var ghostText: AnyPublisher<String, Never> { get }
     var error: AnyPublisher<String?, Never> { get }
     
+    var currentState: EngineState { get }
+    var currentError: String? { get }
+    
     func startDictation() async throws
     func stopDictation() async throws
     func cancelDictation() async
@@ -44,6 +47,9 @@ public final class DictationOrchestrator: DictationOrchestratorProtocol {
     public var state: AnyPublisher<EngineState, Never> { stateSubject.eraseToAnyPublisher() }
     public var ghostText: AnyPublisher<String, Never> { ghostTextSubject.eraseToAnyPublisher() }
     public var error: AnyPublisher<String?, Never> { errorSubject.eraseToAnyPublisher() }
+    
+    public var currentState: EngineState { stateSubject.value }
+    public var currentError: String? { errorSubject.value }
     
     private init() {}
     

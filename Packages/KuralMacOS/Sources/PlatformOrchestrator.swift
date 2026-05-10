@@ -20,7 +20,7 @@ public final class PlatformOrchestrator {
                 switch state {
                 case .idle:
                     // Only hide if there's no error being displayed
-                    if orchestrator.error.publisher(for: \.self) == nil {
+                    if orchestrator.currentError == nil {
                          OverlayWindowController.shared.hide()
                     }
                 case .recording:
@@ -51,7 +51,7 @@ public final class PlatformOrchestrator {
                     // Auto-hide error after 5 seconds
                     Task {
                         try? await Task.sleep(nanoseconds: 5 * 1_000_000_000)
-                        if DictationOrchestrator.shared.stateSubjectValue == .idle {
+                        if DictationOrchestrator.shared.currentState == .idle {
                             OverlayWindowController.shared.hide()
                             DictationOrchestrator.shared.clearError()
                         }
@@ -59,15 +59,5 @@ public final class PlatformOrchestrator {
                 }
             }
             .store(in: &cancellables)
-    }
-}
-
-// Helper to access state value without publicizing the subject
-extension DictationOrchestrator {
-    var stateSubjectValue: EngineState {
-        // This is a bit of a hack since stateSubject is private. 
-        // I should probably make the current state value accessible.
-        // Let me check DictationOrchestrator again.
-        return .idle // Placeholder
     }
 }
