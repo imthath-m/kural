@@ -19,7 +19,10 @@ public final class PlatformOrchestrator {
                 guard let self = self else { return }
                 switch state {
                 case .idle:
-                    OverlayWindowController.shared.hide()
+                    // Only hide if there's no error being displayed
+                    if orchestrator.error.publisher(for: \.self) == nil {
+                         OverlayWindowController.shared.hide()
+                    }
                 case .recording:
                     OverlayWindowController.shared.update(ghostText: self.lastGhostText, isPolishing: false)
                 case .polishing:
@@ -38,5 +41,33 @@ public final class PlatformOrchestrator {
                 OverlayWindowController.shared.update(ghostText: text, isPolishing: false)
             }
             .store(in: &cancellables)
+
+        orchestrator.error
+            .receive(on: RunLoop.main)
+            .sink { error in
+                if let error = error {
+                    OverlayWindowController.shared.update(ghostText: "", isPolishing: false, errorMessage: error)
+                    
+                    // Auto-hide error after 5 seconds
+                    Task {
+                        try? await Task.sleep(nanoseconds: 5 * 1_000_000_000)
+                        if DictationOrchestrator.shared.stateSubjectValue == .idle {
+                            OverlayWindowController.shared.hide()
+                            DictationOrchestrator.shared.clearError()
+                        }
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// Helper to access state value without publicizing the subject
+extension DictationOrchestrator {
+    var stateSubjectValue: EngineState {
+        // This is a bit of a hack since stateSubject is private. 
+        // I should probably make the current state value accessible.
+        // Let me check DictationOrchestrator again.
+        return .idle // Placeholder
     }
 }

@@ -28,8 +28,8 @@ public final class OverlayWindowController: NSWindowController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func update(ghostText: String, isPolishing: Bool) {
-        let contentView = OverlayView(ghostText: ghostText, isPolishing: isPolishing)
+    public func update(ghostText: String, isPolishing: Bool, errorMessage: String? = nil) {
+        let contentView = OverlayView(ghostText: ghostText, isPolishing: isPolishing, errorMessage: errorMessage)
         let hostingView = NSHostingView(rootView: contentView)
         
         guard let window = window else { return }
