@@ -17,7 +17,8 @@ let package = Package(
     dependencies: [
         .package(path: "../KuralDomain"),
         .package(path: "../KuralEngine"),
-        .package(path: "../KuralStorage")
+        .package(path: "../KuralStorage"),
+        .package(path: "../KuralModels")
     ],
     targets: [
         .target(
@@ -25,7 +26,8 @@ let package = Package(
             dependencies: [
                 "KuralDomain",
                 "KuralEngine",
-                "KuralStorage"
+                "KuralStorage",
+                "KuralModels"
             ],
             path: "Sources"
         )

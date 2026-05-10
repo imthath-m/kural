@@ -9,18 +9,20 @@ extension KeyboardShortcuts.Name {
 public final class HotkeyManager: ObservableObject {
     public static let shared = HotkeyManager()
     
+    public var onKeyDown: (() -> Void)?
+    public var onKeyUp: (() -> Void)?
+    
     private init() {
-        KeyboardShortcuts.onKeyDown(for: .pushToTalk) {
-            print("Hotkey pressed: pushToTalk")
+        KeyboardShortcuts.onKeyDown(for: .pushToTalk) { [weak self] in
+            self?.onKeyDown?()
         }
         
-        KeyboardShortcuts.onKeyUp(for: .pushToTalk) {
-            print("Hotkey released: pushToTalk")
+        KeyboardShortcuts.onKeyUp(for: .pushToTalk) { [weak self] in
+            self?.onKeyUp?()
         }
     }
     
     public func setup() {
         // Just to trigger the singleton initialization
-        print("HotkeyManager initialized and listening for pushToTalk hotkey")
     }
 }
