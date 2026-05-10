@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 import KuralKit
 import KuralDomain
 import KuralStorage
@@ -19,11 +18,7 @@ struct AppEntry: App {
         HotkeyManager.shared.setup()
         
         do {
-            let schema = Schema([SessionRecord.self])
-            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-            let container = try ModelContainer(for: schema, configurations: [config])
-            
-            let sessionStore = SessionStore(modelContainer: container)
+            let sessionStore = try SessionStore.create()
             let insertionService = TextInsertionService()
             
             DictationOrchestrator.shared.setup(
