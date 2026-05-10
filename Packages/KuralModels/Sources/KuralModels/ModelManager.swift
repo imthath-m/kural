@@ -20,7 +20,25 @@ public final class ModelManager {
     
     private let hub = HubApi()
     
-    private init() {}
+    private init() {
+        checkLocalModels()
+    }
+
+    private func checkLocalModels() {
+        let transcriptionRepo = Hub.Repo(id: transcriptionRepoId)
+        let polishingRepo = Hub.Repo(id: polishingRepoId)
+        
+        let transcriptionURL = hub.localRepoLocation(transcriptionRepo)
+        let polishingURL = hub.localRepoLocation(polishingRepo)
+        
+        if FileManager.default.fileExists(atPath: transcriptionURL.path) {
+            transcriptionModelState = .ready
+        }
+        
+        if FileManager.default.fileExists(atPath: polishingURL.path) {
+            polishingModelState = .ready
+        }
+    }
     
     public func downloadModels() async throws {
         try await withThrowingTaskGroup(of: Void.self) { group in
