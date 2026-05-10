@@ -3,9 +3,21 @@ import SwiftUI
 struct OverlayView: View {
     let ghostText: String
     let isPolishing: Bool
+    let errorMessage: String?
     
     var body: some View {
         VStack(spacing: 8) {
+            if let error = errorMessage {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.red)
+                    Text(error)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.red)
+                }
+                .padding(.bottom, ghostText.isEmpty ? 0 : 8)
+            }
+
             if !ghostText.isEmpty {
                 Text(ghostText)
                     .font(.system(size: 24, weight: .medium, design: .rounded))
@@ -38,6 +50,9 @@ struct OverlayView: View {
 }
 
 #Preview {
-    OverlayView(ghostText: "Testing ghost text transcription...", isPolishing: true)
-        .padding()
+    VStack {
+        OverlayView(ghostText: "Testing ghost text transcription...", isPolishing: true, errorMessage: nil)
+        OverlayView(ghostText: "", isPolishing: false, errorMessage: "Microphone is unavailable. Please check your system settings.")
+    }
+    .padding()
 }
