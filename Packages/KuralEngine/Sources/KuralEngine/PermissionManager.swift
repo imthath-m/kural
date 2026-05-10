@@ -1,13 +1,14 @@
 import Foundation
 import AVFoundation
+import KuralDomain
 
 public final class PermissionManager {
     public static let shared = PermissionManager()
     
     private init() {}
     
-    public var microphonePermissionStatus: AVAuthorizationStatus {
-        AVCaptureDevice.authorizationStatus(for: .audio)
+    public var microphonePermissionStatus: PermissionState {
+        mapStatus(AVCaptureDevice.authorizationStatus(for: .audio))
     }
     
     public func requestMicrophonePermission() async -> Bool {
@@ -15,6 +16,19 @@ public final class PermissionManager {
             AVCaptureDevice.requestAccess(for: .audio) { granted in
                 continuation.resume(returning: granted)
             }
+        }
+    }
+    
+    private func mapStatus(_ status: AVAuthorizationStatus) -> PermissionState {
+        switch status {
+        case .notDetermined:
+            return .notRequested
+        case .authorized:
+            return .authorized
+        case .denied, .restricted:
+            return .rejected
+        @unknown default:
+            return .rejected
         }
     }
 }
