@@ -23,6 +23,10 @@ let package = Package(
             dependencies: [
                 "KuralDomain"
             ]
+        ),
+        .testTarget(
+            name: "KuralEngineTests",
+            dependencies: ["KuralEngine"]
         )
     ]
 )
