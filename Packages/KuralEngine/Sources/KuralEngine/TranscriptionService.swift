@@ -34,7 +34,7 @@ public actor TranscriptionService {
                     
                     for await samples in audio {
                         let mlxArray = MLXArray(samples)
-                        let result = try await model.generate(audio: mlxArray)
+                        let result = model.generate(audio: mlxArray)
                         if !result.text.isEmpty {
                             accumulatedText += (accumulatedText.isEmpty ? "" : " ") + result.text
                             continuation.yield(accumulatedText)

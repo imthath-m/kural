@@ -18,7 +18,7 @@ let package = Package(
         .package(path: "../KuralDomain"),
         .package(url: "https://github.com/ml-explore/mlx-swift-lm", from: "3.0.0"),
         .package(url: "https://github.com/Blaizzy/mlx-audio-swift", branch: "main"),
-        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.10.0"),
+        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.30.6"),
         .package(url: "https://github.com/huggingface/swift-transformers.git", from: "1.3.0"),
         .package(url: "https://github.com/huggingface/swift-huggingface.git", from: "0.9.0")
     ],

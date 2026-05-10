@@ -17,7 +17,7 @@ let package = Package(
     targets: [
         .target(
             name: "KuralDomain",
-            path: "Sources"
+            path: "Sources/KuralDomain"
         )
     ]
 )
