@@ -58,10 +58,9 @@ struct AppEntry: App {
         Settings {
             SettingsView()
         }
-        #else
-        WindowGroup {
+        #endif
+        WindowGroup(id: "main") {
             ContentView()
         }
-        #endif
     }
 }

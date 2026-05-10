@@ -4,6 +4,7 @@ import KuralDomain
 import KuralModels
 
 public struct MenuBarView: View {
+    @Environment(\.openWindow) private var openWindow
     @StateObject private var accessibility = AccessibilityManager.shared
     private var modelManager = ModelManager.shared
     
@@ -70,10 +71,20 @@ public struct MenuBarView: View {
             
             Divider()
             
+            Button("Open Kural") {
+                NSApp.activate(ignoringOtherApps: true)
+                openWindow(id: "main")
+            }
+            
             SettingsLink {
                 Text("Settings...")
             }
             .keyboardShortcut(",", modifiers: .command)
+            
+            Button("Settings (Fallback)") {
+                NSApp.activate(ignoringOtherApps: true)
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            }
             
             Divider()
             
