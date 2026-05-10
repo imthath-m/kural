@@ -23,7 +23,7 @@ struct AppEntry: App {
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             let container = try ModelContainer(for: schema, configurations: [config])
             
-            let sessionStore = SessionStore(modelContext: container.mainContext)
+            let sessionStore = SessionStore(container: container)
             let insertionService = TextInsertionService()
             
             DictationOrchestrator.shared.setup(

@@ -2,14 +2,8 @@ import Foundation
 import SwiftData
 import KuralDomain
 
-public final class SessionStore {
-    private let modelContext: ModelContext
-    
-    public init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    
-    @MainActor
+@ModelActor
+public final actor SessionStore {
     public func saveSession(ghostText: String, polishedText: String, duration: TimeInterval) {
         let session = SessionRecord(
             ghostText: ghostText,
@@ -17,5 +11,6 @@ public final class SessionStore {
             duration: duration
         )
         modelContext.insert(session)
+        try? modelContext.save()
     }
 }
