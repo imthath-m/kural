@@ -15,13 +15,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(path: "../KuralDomain")
+        .package(path: "../KuralDomain"),
+        .package(url: "https://github.com/ml-explore/mlx-swift-lm", from: "3.0.0")
     ],
     targets: [
         .target(
             name: "KuralEngine",
             dependencies: [
-                "KuralDomain"
+                "KuralDomain",
+                .product(name: "MLXSwiftLM", package: "mlx-swift-lm")
             ]
         ),
         .testTarget(
