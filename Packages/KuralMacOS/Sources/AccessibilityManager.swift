@@ -8,8 +8,23 @@ public final class AccessibilityManager: ObservableObject {
     
     public static let shared = AccessibilityManager()
     
+    private var activeObserver: NSObjectProtocol?
+    
     private init() {
         checkTrust()
+        activeObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.checkTrust()
+        }
+    }
+    
+    deinit {
+        if let observer = activeObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
     
     public func checkTrust() {
