@@ -15,6 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../KuralKit"),
+        .package(path: "../KuralDomain"),
         .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.2.0")
     ],
     targets: [
@@ -22,6 +23,7 @@ let package = Package(
             name: "KuralMacOS",
             dependencies: [
                 "KuralKit",
+                "KuralDomain",
                 "KeyboardShortcuts"
             ],
             path: "Sources"
