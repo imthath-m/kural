@@ -10,6 +10,8 @@ public enum ModelDownloadState: Equatable {
 
 @Observable
 public final class ModelManager {
+    public static let shared = ModelManager()
+    
     public private(set) var transcriptionModelState: ModelDownloadState = .notDownloaded
     public private(set) var polishingModelState: ModelDownloadState = .notDownloaded
     
@@ -18,7 +20,7 @@ public final class ModelManager {
     
     private let hub = HubApi()
     
-    public init() {}
+    private init() {}
     
     public func downloadModels() async throws {
         try await withThrowingTaskGroup(of: Void.self) { group in
