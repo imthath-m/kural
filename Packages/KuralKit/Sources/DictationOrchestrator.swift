@@ -34,6 +34,7 @@ public final class DictationOrchestrator: DictationOrchestratorProtocol {
     private let ghostTextSubject = PassthroughSubject<String, Never>()
     
     private var transcriptionTask: Task<Void, Never>?
+    private var postProcessingTask: Task<Void, Error>?
     private var currentGhostText = ""
     private var startTime: Date?
     
@@ -79,35 +80,53 @@ public final class DictationOrchestrator: DictationOrchestratorProtocol {
         
         stateSubject.send(.polishing)
         
-        do {
-            let polishedText = try await polishingService.polish(transcript: currentGhostText)
-            
-            stateSubject.send(.inserting)
-            
-            // Insert text
-            try await insertionService?.insertText(polishedText)
-            
-            // Save to storage
-            if let store = sessionStore {
-                let duration = Date().timeIntervalSince(startTime ?? Date())
-                await store.saveSession(
-                    ghostText: currentGhostText,
-                    polishedText: polishedText,
-                    duration: duration
-                )
+        let transcript = currentGhostText
+        let startTime = self.startTime
+        
+        postProcessingTask = Task {
+            do {
+                let polishedText = try await polishingService.polish(transcript: transcript)
+                try Task.checkCancellation()
+                
+                stateSubject.send(.inserting)
+                try await insertionService?.insertText(polishedText)
+                try Task.checkCancellation()
+                
+                // Save to storage
+                if let store = sessionStore {
+                    let duration = Date().timeIntervalSince(startTime ?? Date())
+                    await store.saveSession(
+                        ghostText: transcript,
+                        polishedText: polishedText,
+                        duration: duration
+                    )
+                }
+                
+                stateSubject.send(.idle)
+            } catch is CancellationError {
+                // Return gracefully on cancellation
+            } catch {
+                stateSubject.send(.idle)
+                throw error
             }
-            
-            stateSubject.send(.idle)
+        }
+        
+        do {
+            try await postProcessingTask?.value
+        } catch is CancellationError {
+            // Handled in task
         } catch {
-            stateSubject.send(.idle)
             throw error
         }
+        postProcessingTask = nil
     }
     
     public func cancelDictation() async {
         audioStreamer.stop()
         transcriptionTask?.cancel()
         transcriptionTask = nil
+        postProcessingTask?.cancel()
+        postProcessingTask = nil
         stateSubject.send(.idle)
     }
 }
