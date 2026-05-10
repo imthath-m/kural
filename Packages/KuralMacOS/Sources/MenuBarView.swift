@@ -40,7 +40,7 @@ public struct MenuBarView: View {
             Divider()
             
             Button("Settings...") {
-                // TODO: Open settings
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
             }
             .keyboardShortcut(",", modifiers: .command)
             

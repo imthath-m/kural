@@ -21,6 +21,9 @@ struct AppEntry: App {
         MenuBarExtra("Kural", systemImage: "waveform") {
             MenuBarView()
         }
+        Settings {
+            SettingsView()
+        }
         #else
         WindowGroup {
             ContentView()
