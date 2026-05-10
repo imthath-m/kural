@@ -9,6 +9,12 @@ options:
   generateEmptyDirectories: true
 
 packages:
+  KuralDomain:
+    path: Packages/KuralDomain
+  KuralEngine:
+    path: Packages/KuralEngine
+  KuralStorage:
+    path: Packages/KuralStorage
   KuralKit:
     path: Packages/KuralKit
   KuralMacOS:
