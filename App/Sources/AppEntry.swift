@@ -10,20 +10,21 @@ struct AppEntry: App {
     @StateObject private var hotkeyManager = HotkeyManager.shared
     #endif
 
+    init() {
+        #if os(macOS)
+        HotkeyManager.shared.setup()
+        #endif
+    }
+
     var body: some Scene {
         #if os(macOS)
         MenuBarExtra("Kural", systemImage: "waveform") {
             MenuBarView()
         }
-        #endif
-
+        #else
         WindowGroup {
             ContentView()
-                .onAppear {
-                    #if os(macOS)
-                    hotkeyManager.setup()
-                    #endif
-                }
         }
+        #endif
     }
 }

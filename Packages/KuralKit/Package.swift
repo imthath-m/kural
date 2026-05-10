@@ -14,9 +14,15 @@ let package = Package(
             targets: ["KuralKit"]
         )
     ],
+    dependencies: [
+        .package(path: "../KuralDomain")
+    ],
     targets: [
         .target(
             name: "KuralKit",
+            dependencies: [
+                "KuralDomain"
+            ],
             path: "Sources"
         )
     ]
