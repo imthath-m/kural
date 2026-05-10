@@ -23,27 +23,33 @@ public final class ModelManager {
     public func downloadModels() async throws {
         try await withThrowingTaskGroup(of: Void.self) { group in
             group.addTask {
-                await self.updateTranscriptionState(.downloading(progress: 0))
-                _ = try await self.hub.snapshot(from: self.transcriptionRepoId) { progress in
-                    Task { @MainActor in
-                        self.transcriptionModelState = .downloading(progress: progress.fractionCompleted)
-                    }
-                }
-                await self.updateTranscriptionState(.ready)
+                try await self.downloadTranscriptionModel()
             }
-            
             group.addTask {
-                await self.updatePolishingState(.downloading(progress: 0))
-                _ = try await self.hub.snapshot(from: self.polishingRepoId) { progress in
-                    Task { @MainActor in
-                        self.polishingModelState = .downloading(progress: progress.fractionCompleted)
-                    }
-                }
-                await self.updatePolishingState(.ready)
+                try await self.downloadPolishingModel()
             }
-            
             try await group.waitForAll()
         }
+    }
+    
+    public func downloadTranscriptionModel() async throws {
+        await updateTranscriptionState(.downloading(progress: 0))
+        _ = try await hub.snapshot(from: transcriptionRepoId) { progress in
+            Task { @MainActor in
+                self.transcriptionModelState = .downloading(progress: progress.fractionCompleted)
+            }
+        }
+        await updateTranscriptionState(.ready)
+    }
+    
+    public func downloadPolishingModel() async throws {
+        await updatePolishingState(.downloading(progress: 0))
+        _ = try await hub.snapshot(from: polishingRepoId) { progress in
+            Task { @MainActor in
+                self.polishingModelState = .downloading(progress: progress.fractionCompleted)
+            }
+        }
+        await updatePolishingState(.ready)
     }
     
     @MainActor
