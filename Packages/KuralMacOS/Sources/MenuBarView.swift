@@ -1,5 +1,6 @@
 import SwiftUI
 import KuralKit
+import KuralDomain
 
 public struct MenuBarView: View {
     @StateObject private var accessibility = AccessibilityManager.shared
@@ -16,7 +17,7 @@ public struct MenuBarView: View {
                     .font(.headline)
             }
             
-            if !accessibility.isTrusted {
+            if accessibility.permissionState != .authorized {
                 VStack(alignment: .leading, spacing: 8) {
                     Divider()
                     Text("Accessibility Permission Required")

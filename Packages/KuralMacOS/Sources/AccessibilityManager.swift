@@ -1,9 +1,10 @@
 import Foundation
 import ApplicationServices
 import Cocoa
+import KuralDomain
 
 public final class AccessibilityManager: ObservableObject {
-    @Published public private(set) var isTrusted: Bool = false
+    @Published public private(set) var permissionState: PermissionState = .notRequested
     
     public static let shared = AccessibilityManager()
     
@@ -12,7 +13,7 @@ public final class AccessibilityManager: ObservableObject {
     }
     
     public func checkTrust() {
-        isTrusted = AXIsProcessTrusted()
+        permissionState = AXIsProcessTrusted() ? .authorized : .rejected
     }
     
     public func requestPermission() {
