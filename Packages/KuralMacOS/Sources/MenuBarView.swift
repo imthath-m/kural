@@ -24,7 +24,7 @@ public struct MenuBarView: View {
                         .fontWeight(.bold)
                         .foregroundStyle(.primary)
                     
-                    Text("Kural needs accessibility permission to insert polished text into other apps.")
+                    Text("Kural needs accessibility permission to insert text into other apps.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     

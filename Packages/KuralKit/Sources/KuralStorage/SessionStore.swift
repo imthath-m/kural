@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import KuralDomain
 
 public final class SessionStore {
     private let modelContext: ModelContext
