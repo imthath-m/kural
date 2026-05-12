@@ -15,41 +15,41 @@ public final class AccessibilityManager: ObservableObject {
         checkTrust()
         
         // Observe app becoming active
-        activeObserver = NotificationCenter.default.addObserver(
-            forName: NSApplication.didBecomeActiveNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Logger.info("App became active, checking accessibility trust")
-            self?.checkTrust()
-        }
-        
-        // For LSUIElement apps, didBecomeActiveNotification might not fire reliably.
-        // Also observe when other apps deactivate, which might mean we became active or user clicked our menu
-        workspaceObserver = NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didActivateApplicationNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            // When user switches away from System Settings, they might be interacting with us
-            if let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-               app.bundleIdentifier == Bundle.main.bundleIdentifier {
-                Logger.info("App activated via Workspace, checking accessibility trust")
-                self?.checkTrust()
-            } else {
-                // Also check if we just gained focus in general
-                self?.checkTrust()
-            }
-        }
-    }
-    
-    deinit {
-        if let observer = activeObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-        if let wObserver = workspaceObserver {
-            NSWorkspace.shared.notificationCenter.removeObserver(wObserver)
-        }
+//        activeObserver = NotificationCenter.default.addObserver(
+//            forName: NSApplication.didBecomeActiveNotification,
+//            object: nil,
+//            queue: .main
+//        ) { [weak self] _ in
+//            Logger.info("App became active, checking accessibility trust")
+//            self?.checkTrust()
+//        }
+//        
+//        // For LSUIElement apps, didBecomeActiveNotification might not fire reliably.
+//        // Also observe when other apps deactivate, which might mean we became active or user clicked our menu
+//        workspaceObserver = NSWorkspace.shared.notificationCenter.addObserver(
+//            forName: NSWorkspace.didActivateApplicationNotification,
+//            object: nil,
+//            queue: .main
+//        ) { [weak self] notification in
+//            // When user switches away from System Settings, they might be interacting with us
+//            if let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+//               app.bundleIdentifier == Bundle.main.bundleIdentifier {
+//                Logger.info("App activated via Workspace, checking accessibility trust")
+//                self?.checkTrust()
+//            } else {
+//                // Also check if we just gained focus in general
+//                self?.checkTrust()
+//            }
+//        }
+//    }
+//    
+//    deinit {
+//        if let observer = activeObserver {
+//            NotificationCenter.default.removeObserver(observer)
+//        }
+//        if let wObserver = workspaceObserver {
+//            NSWorkspace.shared.notificationCenter.removeObserver(wObserver)
+//        }
     }
     
     public func checkTrust() {
