@@ -5,6 +5,7 @@ import KuralDomain
 
 public struct SettingsView: View {
     @StateObject private var accessibilityManager = AccessibilityManager.shared
+    @StateObject private var hotkeyManager = HotkeyManager.shared
     @State private var microphoneStatus: PermissionState = PermissionManager.shared.microphonePermissionStatus
     
     public init() {}
@@ -12,10 +13,24 @@ public struct SettingsView: View {
     public var body: some View {
         Form {
             Section("General") {
-                HStack {
-                    Text("Push-to-Talk Hotkey")
-                    Spacer()
-                    KeyboardShortcuts.Recorder(for: .pushToTalk)
+                Picker("Hotkey Mode", selection: $hotkeyManager.mode) {
+                    Text("Key Combo").tag(HotkeyMode.combo)
+                    Text("Single Modifier").tag(HotkeyMode.singleModifier)
+                }
+                .pickerStyle(.segmented)
+                
+                if hotkeyManager.mode == .combo {
+                    HStack {
+                        Text("Push-to-Talk Hotkey")
+                        Spacer()
+                        KeyboardShortcuts.Recorder(for: .pushToTalk)
+                    }
+                } else {
+                    Picker("Modifier Key", selection: $hotkeyManager.singleModifier) {
+                        ForEach(SingleModifier.allCases) { modifier in
+                            Text(modifier.rawValue).tag(modifier)
+                        }
+                    }
                 }
             }
             
@@ -47,7 +62,7 @@ public struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 450, height: 300)
+        .frame(width: 450, height: 350)
         .navigationTitle("Kural Settings")
         .onAppear {
             microphoneStatus = PermissionManager.shared.microphonePermissionStatus
