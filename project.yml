@@ -64,6 +64,8 @@ targets:
       base:
         PRODUCT_NAME: Kural
         PRODUCT_BUNDLE_IDENTIFIER: com.skydevz.kural.macos
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 67T577V5Q4
         GENERATE_INFOPLIST_FILE: YES
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: 1.0.0
