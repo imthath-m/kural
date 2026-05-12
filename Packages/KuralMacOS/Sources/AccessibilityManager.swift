@@ -53,7 +53,23 @@ public final class AccessibilityManager: ObservableObject {
     }
     
     public func checkTrust() {
-        let isTrusted = AXIsProcessTrusted()
+        var isTrusted = AXIsProcessTrusted()
+        
+        // Fallback: macOS TCC caching bug workaround during development
+        // If AXIsProcessTrusted() returns false, we try a real accessibility action.
+        if !isTrusted {
+            let systemWideElement = AXUIElementCreateSystemWide()
+            var focusedApp: CFTypeRef?
+            let result = AXUIElementCopyAttributeValue(systemWideElement, kAXFocusedApplicationAttribute as CFString, &focusedApp)
+            
+            if result == .success {
+                isTrusted = true
+                Logger.info("AXIsProcessTrusted() returned false, but real API test succeeded. App has permission.")
+            } else {
+                Logger.info("App really doesn't have a11y persmissoin")
+            }
+        }
+        
         let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
         let path = Bundle.main.bundlePath
         Logger.debug("Checking trust for bundle ID: \(bundleId) at path: \(path)")
@@ -63,7 +79,9 @@ public final class AccessibilityManager: ObservableObject {
         let newState: PermissionState = isTrusted ? .authorized : .rejected
         if permissionState != newState {
             Logger.info("Accessibility permission state changed: \(permissionState) -> \(newState)")
-            permissionState = newState
+            DispatchQueue.main.async { [weak self] in
+                self?.permissionState = newState
+            }
         }
     }
     
