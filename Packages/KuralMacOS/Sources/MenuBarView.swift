@@ -81,10 +81,10 @@ public struct MenuBarView: View {
             }
             .keyboardShortcut(",", modifiers: .command)
             
-            Button("Settings (Fallback)") {
-                NSApp.activate(ignoringOtherApps: true)
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-            }
+//            Button("Settings (Fallback)") {
+//                NSApp.activate(ignoringOtherApps: true)
+//                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+//            }
             
             Divider()
             
