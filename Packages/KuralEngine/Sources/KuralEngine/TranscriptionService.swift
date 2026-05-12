@@ -35,18 +35,35 @@ public actor TranscriptionService {
             Task {
                 do {
                     let model = try await loadModel()
-                    var accumulatedText = ""
+                    var accumulatedSamples: [Float] = []
+                    var lastProcessedCount = 0
                     
                     for await samples in audio {
                         Logger.debug("Received audio samples chunk: \(samples.count) samples")
-                        let mlxArray = MLXArray(samples)
-                        let result = model.generate(audio: mlxArray)
-                        if !result.text.isEmpty {
-                            accumulatedText += (accumulatedText.isEmpty ? "" : " ") + result.text
-                            Logger.debug("Generated text chunk: '\(result.text)'")
-                            continuation.yield(accumulatedText)
+                        accumulatedSamples.append(contentsOf: samples)
+                        
+                        // Process if we have at least 4000 new samples (~0.25 seconds) 
+                        // to avoid excessive CPU usage, or if it's the very first chunk.
+                        if accumulatedSamples.count - lastProcessedCount >= 4000 || lastProcessedCount == 0 {
+                            let mlxArray = MLXArray(accumulatedSamples)
+                            let result = model.generate(audio: mlxArray)
+                            if !result.text.isEmpty {
+                                Logger.debug("Generated text: '\(result.text)'")
+                                continuation.yield(result.text)
+                            }
+                            lastProcessedCount = accumulatedSamples.count
                         }
                     }
+                    
+                    if accumulatedSamples.count > lastProcessedCount {
+                        let mlxArray = MLXArray(accumulatedSamples)
+                        let result = model.generate(audio: mlxArray)
+                        if !result.text.isEmpty {
+                            Logger.debug("Generated final text: '\(result.text)'")
+                            continuation.yield(result.text)
+                        }
+                    }
+                    
                     Logger.info("Audio stream completed, finishing transcription")
                     continuation.finish()
                 } catch {
