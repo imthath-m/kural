@@ -12,7 +12,7 @@ public enum PolishingError: Error {
 }
 
 public actor PolishingService {
-    private let modelName = "mlx-community/gemma-2-2b-it-4bit"
+    private let modelName = "mlx-community/gemma-4-e2b-it-4bit"
     
     public init() {}
     

@@ -17,7 +17,7 @@ public final class ModelManager {
     public private(set) var polishingModelState: ModelDownloadState = .notDownloaded
     
     private let transcriptionRepoId = "mlx-community/parakeet-tdt-0.6b-v2"
-    private let polishingRepoId = "mlx-community/gemma-2-2b-it-4bit"
+    private let polishingRepoId = "mlx-community/gemma-4-e2b-it-4bit"
     
     private let hub = HubApi()
     
