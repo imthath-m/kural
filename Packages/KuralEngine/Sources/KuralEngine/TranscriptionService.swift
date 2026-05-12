@@ -8,7 +8,7 @@ public enum TranscriptionError: Error {
 }
 
 public actor TranscriptionService {
-    private let modelName = "mlx-community/parakeet-tdt-0.6b-v3-8bit"
+    private let modelName = "mlx-community/parakeet-tdt-0.6b-v2"
     private var model: ParakeetModel?
 
     public init() {}
