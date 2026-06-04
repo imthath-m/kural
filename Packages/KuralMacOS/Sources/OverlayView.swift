@@ -3,6 +3,7 @@ import SwiftUI
 struct OverlayView: View {
     let ghostText: String
     let isPolishing: Bool
+    let isListening: Bool
     let errorMessage: String?
     
     var body: some View {
@@ -18,7 +19,17 @@ struct OverlayView: View {
                 .padding(.bottom, ghostText.isEmpty ? 0 : 8)
             }
 
-            if !ghostText.isEmpty {
+            if isListening && ghostText.isEmpty && errorMessage == nil {
+                HStack(spacing: 8) {
+                    Image(systemName: "mic.fill")
+                        .font(.system(size: 20))
+                        .foregroundStyle(.blue)
+                        .symbolEffect(.pulse, options: .repeating)
+                    Text("Listening…")
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .foregroundStyle(.secondary)
+                }
+            } else if !ghostText.isEmpty {
                 Text(ghostText)
                     .font(.system(size: 24, weight: .medium, design: .rounded))
                     .foregroundStyle(.primary)
@@ -50,9 +61,11 @@ struct OverlayView: View {
 }
 
 #Preview {
-    VStack {
-        OverlayView(ghostText: "Testing ghost text transcription...", isPolishing: true, errorMessage: nil)
-        OverlayView(ghostText: "", isPolishing: false, errorMessage: "Microphone is unavailable. Please check your system settings.")
+    VStack(spacing: 16) {
+        OverlayView(ghostText: "", isPolishing: false, isListening: true, errorMessage: nil)
+        OverlayView(ghostText: "Testing ghost text transcription...", isPolishing: false, isListening: true, errorMessage: nil)
+        OverlayView(ghostText: "Testing ghost text transcription...", isPolishing: true, isListening: false, errorMessage: nil)
+        OverlayView(ghostText: "", isPolishing: false, isListening: false, errorMessage: "Microphone is unavailable. Please check your system settings.")
     }
     .padding()
 }

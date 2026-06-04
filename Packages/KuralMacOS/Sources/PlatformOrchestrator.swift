@@ -24,7 +24,8 @@ public final class PlatformOrchestrator {
                          OverlayWindowController.shared.hide()
                     }
                 case .recording:
-                    OverlayWindowController.shared.update(ghostText: self.lastGhostText, isPolishing: false)
+                    self.lastGhostText = ""
+                    OverlayWindowController.shared.update(ghostText: "", isPolishing: false, isListening: true)
                 case .polishing:
                     OverlayWindowController.shared.update(ghostText: self.lastGhostText, isPolishing: true)
                 case .inserting:
@@ -38,7 +39,7 @@ public final class PlatformOrchestrator {
             .sink { [weak self] text in
                 guard let self = self else { return }
                 self.lastGhostText = text
-                OverlayWindowController.shared.update(ghostText: text, isPolishing: false)
+                OverlayWindowController.shared.update(ghostText: text, isPolishing: false, isListening: true)
             }
             .store(in: &cancellables)
 
