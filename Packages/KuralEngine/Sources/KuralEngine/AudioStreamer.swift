@@ -11,6 +11,7 @@ public enum AudioEngineError: Error {
 public final class AudioStreamer {
     private let engine = AVAudioEngine()
     private let targetSampleRate: Double = 16000
+    private var isStreaming = false
     
     public init() {}
     
@@ -18,6 +19,10 @@ public final class AudioStreamer {
     /// - Returns: An AsyncStream of Float arrays (PCM samples at 16kHz).
     /// - Throws: AudioEngineError if the engine or converter fails to initialize.
     public func stream() throws -> AsyncStream<[Float]> {
+        guard !isStreaming else {
+            throw AudioEngineError.engineFailedToStart("Audio stream is already active")
+        }
+        
         let inputNode = engine.inputNode
         let inputFormat = inputNode.inputFormat(forBus: 0)
         
@@ -38,6 +43,11 @@ public final class AudioStreamer {
         guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
             throw AudioEngineError.converterFailedToInitialize
         }
+        
+        // Remove any stale tap before installing a new one to prevent
+        // the `nullptr == Tap()` assertion crash in AVAudioEngine.
+        inputNode.removeTap(onBus: 0)
+        isStreaming = true
         
         return AsyncStream { continuation in
             inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat) { buffer, time in
@@ -68,6 +78,7 @@ public final class AudioStreamer {
                 engine.prepare()
                 try engine.start()
             } catch {
+                self.isStreaming = false
                 continuation.finish()
             }
             
@@ -78,9 +89,11 @@ public final class AudioStreamer {
     }
     
     public func stop() {
+        guard isStreaming else { return }
         if engine.isRunning {
             engine.stop()
         }
         engine.inputNode.removeTap(onBus: 0)
+        isStreaming = false
     }
 }

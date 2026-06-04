@@ -61,8 +61,10 @@ public final class DictationOrchestrator: DictationOrchestratorProtocol {
     public func startDictation() async throws {
         guard stateSubject.value == .idle else { return }
         
-        errorSubject.send(nil)
+        // Set state immediately before any suspension point to prevent
+        // concurrent calls from racing past the .idle guard above.
         stateSubject.send(.recording)
+        errorSubject.send(nil)
         currentGhostText = ""
         startTime = Date()
         
