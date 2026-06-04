@@ -28,15 +28,37 @@ struct AppEntry: App {
             
             PlatformOrchestrator.shared.start()
             
-            HotkeyManager.shared.onKeyDown = {
+            // Push-to-talk: single modifier (hold to record, release to stop)
+            HotkeyManager.shared.onPushToTalkDown = {
                 Task {
                     try? await DictationOrchestrator.shared.startDictation()
                 }
             }
-            
-            HotkeyManager.shared.onKeyUp = {
+            HotkeyManager.shared.onPushToTalkUp = {
                 Task {
                     try? await DictationOrchestrator.shared.stopDictation()
+                }
+            }
+            
+            // Toggle: key combo (press to start, press again to stop)
+            HotkeyManager.shared.onTogglePressed = {
+                Task {
+                    let orchestrator = DictationOrchestrator.shared
+                    if orchestrator.currentState == .recording {
+                        try? await orchestrator.stopDictation()
+                    } else {
+                        try? await orchestrator.startDictation()
+                    }
+                }
+            }
+            
+            // Return key stops active dictation
+            HotkeyManager.shared.onReturnPressed = {
+                Task {
+                    let orchestrator = DictationOrchestrator.shared
+                    if orchestrator.currentState == .recording {
+                        try? await orchestrator.stopDictation()
+                    }
                 }
             }
         } catch {

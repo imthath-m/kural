@@ -12,25 +12,48 @@ public struct SettingsView: View {
     
     public var body: some View {
         Form {
-            Section("General") {
-                Picker("Hotkey Mode", selection: $hotkeyManager.mode) {
-                    Text("Key Combo").tag(HotkeyMode.combo)
-                    Text("Single Modifier").tag(HotkeyMode.singleModifier)
+            Section("Toggle Dictation") {
+                HStack {
+                    Text("Hotkey")
+                    Spacer()
+                    KeyboardShortcuts.Recorder(for: .toggleDictation)
                 }
-                .pickerStyle(.segmented)
                 
-                if hotkeyManager.mode == .combo {
-                    HStack {
-                        Text("Push-to-Talk Hotkey")
-                        Spacer()
-                        KeyboardShortcuts.Recorder(for: .pushToTalk)
-                    }
-                } else {
+                Label(
+                    "Press the same key combination again or Return (⏎) to stop dictation and paste the text into the active app.",
+                    systemImage: "info.circle"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+            
+            Section("Push-to-Talk") {
+                Toggle("Enabled", isOn: $hotkeyManager.singleModifierEnabled)
+                
+                if hotkeyManager.singleModifierEnabled {
                     Picker("Modifier Key", selection: $hotkeyManager.singleModifier) {
                         ForEach(SingleModifier.allCases) { modifier in
                             Text(modifier.rawValue).tag(modifier)
                         }
                     }
+                    
+                    Label(
+                        "Hold down the modifier key to record, release to stop. Ideal for short bursts.",
+                        systemImage: "info.circle"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+            }
+            
+            if hotkeyManager.singleModifierEnabled {
+                Section {
+                    Label(
+                        "Avoid using the same modifier key for both Toggle Dictation and Push-to-Talk to prevent conflicts.",
+                        systemImage: "exclamationmark.triangle"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.orange)
                 }
             }
             
@@ -62,7 +85,7 @@ public struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 450, height: 350)
+        .frame(width: 450, height: 500)
         .navigationTitle("Kural Settings")
         .onAppear {
             microphoneStatus = PermissionManager.shared.microphonePermissionStatus
