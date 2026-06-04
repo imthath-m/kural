@@ -87,6 +87,13 @@ public final class DictationOrchestrator: DictationOrchestratorProtocol {
     public func stopDictation() async throws {
         guard stateSubject.value == .recording else { return }
         
+        // If no speech was captured, cancel silently instead of
+        // trying to polish an empty transcript.
+        if currentGhostText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            await cancelDictation()
+            return
+        }
+        
         audioStreamer.stop()
         transcriptionTask?.cancel()
         transcriptionTask = nil
